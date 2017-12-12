@@ -2,9 +2,9 @@
 This project implements some calibrations including hand-eye calibration, camera calibration, stereo camera calibration;
 
 ## Dependence
-1. Eigen(>=3.0)
-2. OpenCV(>=3.0.0)
-3. Ceres
+1. OpenCV(>=3.0.0)
+2. Visp
+3. gflags
 
 ## How to build
 ```bash
