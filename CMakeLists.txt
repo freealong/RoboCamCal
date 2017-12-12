@@ -34,5 +34,11 @@ include_directories(${src_ROOT})
 add_executable(hand_eye hand_eye.cpp)
 target_link_libraries(hand_eye gflags robocamcal ${VISP_LIBRARIES} ${OpenCV_LIBRARIES})
 
+add_executable(create_marker create_marker.cpp)
+target_link_libraries(create_marker ${OpenCV_LIBRARIES})
+
+add_executable(detect_markers detect_markers.cpp)
+target_link_libraries(detect_markers ${OpenCV_LIBRARIES})
+
 add_executable(temp_test temp_test.cpp)
 target_link_libraries(temp_test robocamcal ${VISP_LIBRARIES})

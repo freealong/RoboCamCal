@@ -16,7 +16,7 @@ namespace Utils {
  * @param t
  * @return
  */
-cv::Mat vpHM2cvMat(const vpHomogeneousMatrix &t) {
+static cv::Mat vpHM2cvMat(const vpHomogeneousMatrix &t) {
   cv::Mat m(t.getRows(), t.getCols(), CV_64F);
   for (int y = 0; y < m.rows; ++y)
     for (int x = 0; x < m.cols; ++x)
