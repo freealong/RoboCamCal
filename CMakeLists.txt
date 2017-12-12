@@ -18,9 +18,10 @@ if(CMAKE_SOURCE_DIR STREQUAL PROJECT_SOURCE_DIR)
 
     find_package(OpenCV 3.0.0 REQUIRED)
     include_directories(OpenCV_INCLUDE_DIRS)
-    find_package(VISP REQUIRED)
-    include_directories(VISP_INCLUDE_DIRS)
 endif()
+
+find_package(VISP REQUIRED)
+include_directories(VISP_INCLUDE_DIRS)
 
 set(src_ROOT ${CMAKE_CURRENT_SOURCE_DIR}/src)
 file(GLOB_RECURSE robocamcal_HEADERS ${src_ROOT}/*.hpp ${src_ROOT}/*.h)
