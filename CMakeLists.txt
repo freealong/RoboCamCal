@@ -25,10 +25,10 @@ include_directories(VISP_INCLUDE_DIRS)
 
 set(src_ROOT ${CMAKE_CURRENT_SOURCE_DIR}/src)
 file(GLOB_RECURSE robocamcal_HEADERS ${src_ROOT}/*.hpp ${src_ROOT}/*.h)
-#file(GLOB_RECURSE robocamcal_SOURCES ${src_ROOT}/*.cpp ${src_ROOT}/*.cc)
+file(GLOB_RECURSE robocamcal_SOURCES ${src_ROOT}/*.cpp ${src_ROOT}/*.cc)
 
-add_library(robocamcal INTERFACE)
-target_sources(robocamcal INTERFACE ${robocamcal_HEADERS})
+add_library(robocamcal ${robocamcal_HEADERS} ${robocamcal_SOURCES})
+target_link_libraries(robocamcal ${OpenCV_LIBRARIES})
 
 include_directories(${src_ROOT})
 
@@ -43,3 +43,9 @@ target_link_libraries(detect_markers ${OpenCV_LIBRARIES})
 
 add_executable(temp_test temp_test.cpp)
 target_link_libraries(temp_test robocamcal ${VISP_LIBRARIES})
+
+add_executable(camcalibration camcalibration.cpp)
+target_link_libraries(camcalibration robocamcal ${OpenCV_LIBRARIES})
+
+add_executable(calib_stereo calib_stereo.cpp)
+target_link_libraries(calib_stereo ${OpenCV_LIBRARIES})
