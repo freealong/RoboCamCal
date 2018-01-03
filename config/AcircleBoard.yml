@@ -1,0 +1,6 @@
+%YAML:1.0
+---
+board_type: AcircleBoard
+board_width: 4
+board_height: 11
+board_length: 0.02

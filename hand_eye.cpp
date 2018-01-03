@@ -6,9 +6,9 @@
 #include <fstream>
 #include <gflags/gflags.h>
 #include <visp/vpCalibration.h>
-#include "visputils.hpp"
-#include "mathutils.hpp"
-#include "cvvpconversion.hpp"
+#include "VispUtils.hpp"
+#include "MathMtils.hpp"
+#include "CVVpConversion.hpp"
 
 DEFINE_string(cMo_filename, "cMo.txt", "name of the file which stores camera pose");
 DEFINE_string(rMe_filename, "rMe.txt", "name of the file which stores robot pose");

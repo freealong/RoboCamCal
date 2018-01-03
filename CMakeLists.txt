@@ -44,8 +44,7 @@ target_link_libraries(detect_markers ${OpenCV_LIBRARIES})
 add_executable(temp_test temp_test.cpp)
 target_link_libraries(temp_test robocamcal ${VISP_LIBRARIES})
 
-add_executable(camcalibration camcalibration.cpp)
-target_link_libraries(camcalibration robocamcal ${OpenCV_LIBRARIES})
+add_executable(camera_calibration camera_calibration.cpp)
+target_link_libraries(camera_calibration robocamcal ${OpenCV_LIBRARIES})
 
-add_executable(calib_stereo calib_stereo.cpp)
-target_link_libraries(calib_stereo ${OpenCV_LIBRARIES})
+

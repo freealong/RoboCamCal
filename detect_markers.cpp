@@ -40,7 +40,7 @@ the use of this software, even if advised of the possibility of such damage.
 #include <opencv2/aruco.hpp>
 #include <iostream>
 #include <fstream>
-#include "cvutils.hpp"
+#include "CVUtils.hpp"
 
 using namespace std;
 using namespace cv;
