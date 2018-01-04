@@ -15,9 +15,8 @@ class CalibController {
  public:
   /**
    * Feed a new data form current frame
-   * @param detector
    */
-  virtual void FeedData(const BoardDetector &detector) = 0;
+  virtual void FeedData() = 0;
 
   /**
    * Drop last feed data

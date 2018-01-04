@@ -15,7 +15,7 @@ const std::string keys =
     "{ci     | 0         | Default camera id}"
     "{bc     |           | Board config yml file}"
     "{o      |           | Output file name}"
-    "{help   |           | Print help}";
+    "{help   |           | print help}";
 
 // params paser
 struct CmdParameters {
@@ -50,12 +50,12 @@ int main(int argc, char **argv) try {
   else
     capture.open(parameters.video_filename);
   // init BoardDetector
-  BoardDetector detector(parameters.board_cfg);
+  std::shared_ptr<BoardDetector> detector(new BoardDetector(parameters.board_cfg));
   // init CalibController
   CalibrationStatus status = CalibrationStatus::None;
   std::shared_ptr<CameraCalibData> data(new CameraCalibData);
   std::shared_ptr<CameraCalibResults> results(new CameraCalibResults);
-  std::shared_ptr<CalibController> controller(new CameraCalibController(data, results));
+  std::shared_ptr<CalibController> controller(new CameraCalibController(data, results, detector));
   // init CalibViewer
   CalibViewer viewer;
   CalibViewer::PrintHelp();
@@ -64,22 +64,23 @@ int main(int argc, char **argv) try {
   grab_frame(capture, frame);
   while (status != CalibrationStatus::Finished) {
     // detect board
-    detector.Detect(frame);
+    detector->Detect(frame);
     show_frame = frame.clone();
-    detector.DrawImagePoints(show_frame);
+    detector->DrawImagePoints(show_frame);
     // show image
     viewer.AddImage("Image", show_frame);
     status = viewer.Update();
     // process keyboard event
     switch (status) {
       case CalibrationStatus::Calibration :
+        // set image size before calibration
         results->image_size.height = frame.rows;
         results->image_size.width = frame.cols;
         controller->Calibrate();
-        results->Print();
+        results->print();
         break;
       case CalibrationStatus::SaveCurrentData :
-        controller->FeedData(detector);
+        controller->FeedData();
         if (parameters.input_source == 2)
           grab_frame(capture, frame);
         break;
@@ -97,8 +98,7 @@ int main(int argc, char **argv) try {
         if (parameters.input_source == 2)
           grab_frame(capture, frame);
         break;
-      case CalibrationStatus::WriteResult :
-        results->Save(parameters.output_filename);
+      case CalibrationStatus::WriteResult :results->write(parameters.output_filename);
       default:break;
     }
     // always get next frames if input source is from camera or video

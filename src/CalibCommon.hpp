@@ -15,7 +15,7 @@ enum class CalibrationType {CameraCalibration, StereoCalibration, HandeyeCalibra
 // supported calibration board type
 enum class BoardType {ChessBoard, AcirclesGrid, ArucoBoard};
 
-// camera calibration Results
+// camera calibration results
 struct CameraCalibResults {
   cv::Mat camera_matrix;
   cv::Mat dist_coeffs;
@@ -24,8 +24,9 @@ struct CameraCalibResults {
   bool valid;
 
   CameraCalibResults() : image_size(0, 0), valid(false) {}
-  void Print();
-  void Save(std::string s);
+  void print();
+  void write(std::string s);
+  bool read(std::string s);
 };
 
 // camera calibration data
@@ -34,6 +35,31 @@ struct CameraCalibData {
   std::vector<std::vector<cv::Point3f>> object_points;
   size_t size() {
     return image_points.size();
+  }
+};
+
+// stereo calibration results
+struct StereoCalibResults {
+  CameraCalibResults left_res, right_res;
+  cv::Mat R, T;
+  cv::Mat E, F;
+  cv::Mat R1, P1, R2, P2;
+  cv::Mat Q;
+  double rsm_error;
+  bool valid;
+
+  StereoCalibResults() : valid(false) {}
+  void print();
+  void write(std::string s);
+  bool read(std::string s);
+};
+
+// stereo calibration data
+struct StereoCalibData {
+  CameraCalibData left_data;
+  CameraCalibData right_data;
+  size_t size() {
+    return left_data.size();
   }
 };
 

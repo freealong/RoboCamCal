@@ -11,17 +11,24 @@ namespace Robocamcal {
 
 class CameraCalibController : public CalibController {
  public:
-  CameraCalibController(std::shared_ptr<CameraCalibData> data, std::shared_ptr<CameraCalibResults> results);
+  CameraCalibController(std::shared_ptr<CameraCalibData> data,
+                        std::shared_ptr<CameraCalibResults> results,
+                        std::shared_ptr<BoardDetector> detector);
 
-  virtual void FeedData(const BoardDetector &detector);
+  virtual void FeedData();
 
   virtual void DropData();
 
+  /**
+   * Before run Calibration, should set the image size in results_
+   * @return
+   */
   virtual bool Calibrate();
 
  private:
   std::shared_ptr<CameraCalibData> data_;
   std::shared_ptr<CameraCalibResults> results_;
+  std::shared_ptr<BoardDetector> detector_;
 };
 
 }

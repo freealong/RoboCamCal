@@ -47,4 +47,7 @@ target_link_libraries(temp_test robocamcal ${VISP_LIBRARIES})
 add_executable(camera_calibration camera_calibration.cpp)
 target_link_libraries(camera_calibration robocamcal ${OpenCV_LIBRARIES})
 
+add_executable(stereo_calibration stereo_calibration.cpp)
+target_link_libraries(stereo_calibration robocamcal ${OpenCV_LIBRARIES})
+
 

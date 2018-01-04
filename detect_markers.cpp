@@ -60,7 +60,7 @@ const char *keys =
     "{l        | 0.1          | Marker side lenght (in meters). Needed for correct scale in camera pose }"
     "{dp       |              | File of marker detector parameters }"
     "{r        |              | show rejected candidates too }"
-    "{s        |              | Save camera pose to cMo.txt }"
+    "{s        |              | write camera pose to cMo.txt }"
     "{in       | hand_eye.yml | hand eye calibration results}";
 }
 
