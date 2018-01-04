@@ -2,11 +2,11 @@
 // Created by yongqi on 18-1-3.
 //
 
-#include "CalibrationViewer.hpp"
+#include "CalibViewer.hpp"
 
 namespace Robocamcal {
 
-CalibrationStatus CalibrationViewer::Update() {
+CalibrationStatus CalibViewer::Update() {
   for (int i = 0; i < names_.size(); ++i) {
     cv::imshow(names_[i], images_[i]);
   }
@@ -41,7 +41,7 @@ CalibrationStatus CalibrationViewer::Update() {
   return status_;
 }
 
-void CalibrationViewer::PrintHelp() {
+void CalibViewer::PrintHelp() {
   std::cout << "Press h to show this message\n"
             << "ESC or q to quit\n"
             << "r to run calibration\n"

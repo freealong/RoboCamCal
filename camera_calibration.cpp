@@ -2,10 +2,12 @@
 // Created by yongqi on 18-1-3.
 //
 
-#include "CalibrationController.hpp"
-#include "CalibrationViewer.hpp"
+#include "CVUtils.hpp"
+#include "CameraCalibController.hpp"
+#include "CalibViewer.hpp"
 
 using namespace Robocamcal;
+using namespace Robocamcal::Utils;
 
 const std::string keys =
     "{is     | 0         | Input source, 0 from camera, 1 from video file, 2 from pictures}"
@@ -49,14 +51,14 @@ int main(int argc, char **argv) try {
     capture.open(parameters.video_filename);
   // init BoardDetector
   BoardDetector detector(parameters.board_cfg);
-  // init CalibrationController
+  // init CalibController
   CalibrationStatus status = CalibrationStatus::None;
   std::shared_ptr<CameraCalibData> data(new CameraCalibData);
   std::shared_ptr<CameraCalibResults> results(new CameraCalibResults);
-  std::shared_ptr<CalibrationController> controller(new CameraCalibController(data, results));
-  // init CalibrationViewer
-  CalibrationViewer viewer;
-  CalibrationViewer::PrintHelp();
+  std::shared_ptr<CalibController> controller(new CameraCalibController(data, results));
+  // init CalibViewer
+  CalibViewer viewer;
+  CalibViewer::PrintHelp();
   // begin to loop
   cv::Mat frame, show_frame;
   grab_frame(capture, frame);

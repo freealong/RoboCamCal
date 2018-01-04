@@ -37,6 +37,13 @@ static void mat2pose(const cv::Mat &t, T &x, T &y, T &z, T &roll, T &pitch, T &y
   yaw = atan2(t.at<double>(1, 0), t.at<double>(0, 0));
 }
 
+inline void grab_frame(cv::VideoCapture &capture, cv::Mat &frame) {
+  if (capture.grab())
+    capture.retrieve(frame);
+  else
+    std::cerr << "Grab frame failed, already reach the end of the Frames" << std::endl;
+}
+
 }
 }
 #endif //ROBOCAMCAL_CVUTILS_HPP

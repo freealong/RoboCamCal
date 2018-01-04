@@ -2,8 +2,8 @@
 // Created by yongqi on 18-1-3.
 //
 
-#ifndef ROBOCAMCAL_CALIBRATIONVIEWER_HPP
-#define ROBOCAMCAL_CALIBRATIONVIEWER_HPP
+#ifndef ROBOCAMCAL_CALIBVIEWER_HPP
+#define ROBOCAMCAL_CALIBVIEWER_HPP
 
 #include <opencv2/opencv.hpp>
 
@@ -21,7 +21,7 @@ enum class CalibrationStatus {
   None
 };
 
-class CalibrationViewer {
+class CalibViewer {
  public:
   CalibrationStatus Update();
 
@@ -41,4 +41,4 @@ class CalibrationViewer {
 
 }
 
-#endif //ROBOCAMCAL_CALIBRATIONVIEWER_HPP
+#endif //ROBOCAMCAL_CALIBVIEWER_HPP

@@ -6,12 +6,12 @@
 #define ROBOCAMCAL_CALIBRATIONCONTROLLER_HPP
 
 #include <memory>
-#include "CalibrationCommon.hpp"
+#include "CalibCommon.hpp"
 #include "BoardDetector.hpp"
 
 namespace Robocamcal {
 
-class CalibrationController {
+class CalibController {
  public:
   /**
    * Feed a new data form current frame
@@ -29,21 +29,6 @@ class CalibrationController {
    * @return if calibrated successfully
    */
   virtual bool Calibrate() = 0;
-};
-
-class CameraCalibController : public CalibrationController {
- public:
-  CameraCalibController(std::shared_ptr<CameraCalibData> data, std::shared_ptr<CameraCalibResults> results);
-
-  virtual void FeedData(const BoardDetector &detector);
-
-  virtual void DropData();
-
-  virtual bool Calibrate();
-
- private:
-  std::shared_ptr<CameraCalibData> data_;
-  std::shared_ptr<CameraCalibResults> results_;
 };
 
 }
