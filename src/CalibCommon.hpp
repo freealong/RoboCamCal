@@ -23,6 +23,8 @@ struct CameraCalibResults {
   double rsm_error;
   bool valid;
 
+  cv::Mat map1, map2;
+
   CameraCalibResults() : image_size(0, 0), valid(false) {}
   void print();
   void write(std::string s);

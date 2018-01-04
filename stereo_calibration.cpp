@@ -79,9 +79,14 @@ int main(int argc, char **argv) try {
   // set left and right cameras params
   results->left_res.read(parameters.left_camera_cfg);
   results->right_res.read(parameters.right_camera_cfg);
+  if (results->left_res.image_size != results->right_res.image_size) {
+    std::cerr << "left image size not same with the right image size" << std::endl;
+    return 0;
+  }
   // begin to loop
   cv::Mat left_frame, left_show_frame;
   cv::Mat right_frame, right_show_frame;
+  bool rectify_view = false;
   grab_frame(left_capture, left_frame);
   grab_frame(right_capture, right_frame);
   while (status != CalibrationStatus::Finished) {
@@ -93,6 +98,15 @@ int main(int argc, char **argv) try {
     left_detector->DrawImagePoints(left_show_frame);
     right_detector->DrawImagePoints(right_show_frame);
     // show image
+    if (rectify_view && results->valid) {
+      cv::remap(left_show_frame, left_show_frame, results->left_res.map1,
+                results->left_res.map2, cv::INTER_LINEAR);
+      cv::remap(right_show_frame, right_show_frame, results->right_res.map1,
+                results->right_res.map2, cv::INTER_LINEAR);
+      bool vertical = results->P2.at<double>(1, 3) > results->P2.at<double>(0, 3);
+      draw_lines(left_show_frame, vertical);
+      draw_lines(right_show_frame, vertical);
+    }
     viewer.AddImage("Left Image", left_show_frame);
     viewer.AddImage("Right Image", right_show_frame);
     status = viewer.Update();
@@ -113,7 +127,7 @@ int main(int argc, char **argv) try {
         controller->DropData();
         break;
       case CalibrationStatus::SwitchUndistort :
-        // @TODO:
+        rectify_view = !rectify_view;
         break;
       case CalibrationStatus::SwitchVisualisation :
         // @TODO:

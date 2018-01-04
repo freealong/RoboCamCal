@@ -47,6 +47,11 @@ bool CameraCalibController::Calibrate() {
                                             results_->image_size, results_->camera_matrix,
                                             results_->dist_coeffs, cv::noArray(), cv::noArray(),
                                             cv::noArray(), cv::noArray(), cv::noArray());
+  cv::initUndistortRectifyMap(results_->camera_matrix, results_->dist_coeffs, cv::Mat(),
+                              cv::getOptimalNewCameraMatrix(results_->camera_matrix,
+                                                            results_->dist_coeffs,
+                                                            results_->image_size, 1),
+                              results_->image_size, CV_16SC2, results_->map1, results_->map2);
   return (results_->valid = true);
 }
 

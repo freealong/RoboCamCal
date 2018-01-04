@@ -61,6 +61,7 @@ int main(int argc, char **argv) try {
   CalibViewer::PrintHelp();
   // begin to loop
   cv::Mat frame, show_frame;
+  bool undistort_view = false;
   grab_frame(capture, frame);
   while (status != CalibrationStatus::Finished) {
     // detect board
@@ -68,6 +69,8 @@ int main(int argc, char **argv) try {
     show_frame = frame.clone();
     detector->DrawImagePoints(show_frame);
     // show image
+    if (undistort_view && results->valid)
+      cv::remap(show_frame, show_frame, results->map1, results->map2, cv::INTER_LINEAR);
     viewer.AddImage("Image", show_frame);
     status = viewer.Update();
     // process keyboard event
@@ -88,7 +91,7 @@ int main(int argc, char **argv) try {
         controller->DropData();
         break;
       case CalibrationStatus::SwitchUndistort :
-        // @TODO:
+        undistort_view = !undistort_view;
         break;
       case CalibrationStatus::SwitchVisualisation :
         // @TODO:

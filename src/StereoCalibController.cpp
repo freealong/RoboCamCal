@@ -67,6 +67,14 @@ bool StereoCalibController::Calibrate() {
                     results_->R, results_->T,
                     results_->R1, results_->R2,
                     results_->P1, results_->P2, results_->Q);
+  cv::initUndistortRectifyMap(results_->left_res.camera_matrix, results_->left_res.dist_coeffs,
+                              results_->R1, results_->P1,
+                              results_->left_res.image_size, CV_16SC2,
+                              results_->left_res.map1, results_->left_res.map2);
+  cv::initUndistortRectifyMap(results_->right_res.camera_matrix, results_->right_res.dist_coeffs,
+                              results_->R2, results_->P2,
+                              results_->right_res.image_size, CV_16SC2,
+                              results_->right_res.map1, results_->left_res.map2);
   return (results_->valid = true);
 }
 

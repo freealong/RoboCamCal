@@ -44,6 +44,17 @@ inline void grab_frame(cv::VideoCapture &capture, cv::Mat &frame) {
     std::cerr << "Grab frame failed, already reach the end of the Frames" << std::endl;
 }
 
+void draw_lines(cv::Mat &frame, bool vertical, int step = 20) {
+  if (vertical) {
+    for (int x = step; x < frame.cols; x += step)
+      cv::line(frame, {0, x}, {frame.rows, x}, {0, 255, 0});
+  }
+  else {
+    for (int y = step; y < frame.rows; y += step)
+      cv::line(frame, {y, 0}, {y, frame.cols}, {0, 255, 0});
+  }
+}
+
 }
 }
 #endif //ROBOCAMCAL_CVUTILS_HPP

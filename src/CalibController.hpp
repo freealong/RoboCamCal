@@ -28,6 +28,7 @@ class CalibController {
    * @return if calibrated successfully
    */
   virtual bool Calibrate() = 0;
+
 };
 
 }
