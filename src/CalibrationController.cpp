@@ -38,6 +38,7 @@ bool CameraCalibController::Calibrate() {
   auto data_size = data_->image_points.size();
   if (data_size < 5) {
     std::cerr << "Calibration failed, too few data to run calibration, please press s to feed more data" << std::endl;
+    results_->valid = false;
     return false;
   }
   if (results_->image_size.width <= 0 || results_->image_size.height <= 0)

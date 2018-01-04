@@ -59,6 +59,12 @@ struct CameraCalibData {
   std::vector<std::vector<cv::Point3f>> object_points;
 };
 
+inline void grab_frame(cv::VideoCapture &capture, cv::Mat &frame) {
+  if (capture.grab())
+    capture.retrieve(frame);
+  else
+    std::cerr << "Grab frame failed, already reach the end of the Frames" << std::endl;
+}
 
 }
 
