@@ -13,7 +13,7 @@ namespace Robocamcal {
 enum class CalibrationType {CameraCalibration, StereoCalibration, HandeyeCalibration};
 
 // supported calibration board type
-enum class BoardType {ChessBoard, AcirclesGrid, ArucoBoard};
+enum class BoardType {ChessBoard, AcirclesGrid, CharucoBoard, GridBoard};
 
 // camera calibration results
 struct CameraCalibResults {

@@ -7,6 +7,7 @@
 
 #include <opencv2/opencv.hpp>
 #include <opencv2/aruco.hpp>
+#include <opencv2/aruco/charuco.hpp>
 #include "CalibCommon.hpp"
 
 namespace Robocamcal {
@@ -44,11 +45,10 @@ class BoardDetector {
    * @param dist_coeffs
    * @param rotation rotation vector
    * @param translation translation vector
+   * @return calculate pose valid
    */
-  inline void CalculateBoardPose(const cv::Mat &camera_matrix, const cv::Mat& dist_coeffs,
-                                 cv::Vec3d& rotation, cv::Vec3d &translation) const {
-    cv::solvePnPRansac(object_points_, image_points_, camera_matrix, dist_coeffs, rotation, translation);
-  }
+  bool CalculateBoardPose(const cv::Mat &camera_matrix, const cv::Mat& dist_coeffs,
+                          cv::Vec3d& rotation, cv::Vec3d &translation) const;
 
   /**
    * Draw board points in frame
@@ -72,7 +72,8 @@ class BoardDetector {
  private:
   bool DetectChessBoard(const cv::Mat &frame);
   bool DetectAcircleGrid(const cv::Mat &frame);
-  bool DetectArucoBoard(const cv::Mat &frame);
+  bool DetectCharucoBoard(const cv::Mat &frame);
+  bool DetectGridBoard(const cv::Mat &frame);
 
   // results
   bool board_found_;
@@ -82,6 +83,14 @@ class BoardDetector {
   BoardType board_type_;
   cv::Size board_size_;
   float board_len_;
+  // aruco only
+  float marker_len_;
+  cv::Ptr<cv::aruco::Dictionary> dictionary_;
+  cv::Ptr<cv::aruco::Board> board_;
+  cv::Ptr<cv::aruco::CharucoBoard> charuco_board_;
+  std::vector<std::vector<cv::Point2f>> marker_corners_;
+  std::vector<int> marker_ids_;
+  std::vector<int> charuco_ids_;
 };
 
 }
