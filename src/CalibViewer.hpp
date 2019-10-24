@@ -18,6 +18,7 @@ enum class CalibrationStatus {
   SwitchVisualisation,
   NextFrame,
   WriteResult,
+  SwitchPlayMode,
   None
 };
 
@@ -33,7 +34,7 @@ class CalibViewer {
   static void PrintHelp();
 
  private:
-  int delay_;
+  int delay_ = 10;
   CalibrationStatus status_;
   std::vector<std::string> names_;
   std::vector<cv::Mat> images_;

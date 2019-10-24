@@ -1,0 +1,7 @@
+string camera_id
+string cmd
+---
+bool success
+sensor_msgs/Image image
+sensor_msgs/CameraInfo camera_info
+float32[] pose # [x,y,z,nx,ny,nz,c]

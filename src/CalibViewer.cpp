@@ -27,12 +27,15 @@ CalibrationStatus CalibViewer::Update() {
     status_ = CalibrationStatus::NextFrame;
   else if (key == 'w' || key == 'W')
     status_ = CalibrationStatus::WriteResult;
+  else if (key == 'p' || key == 'P')
+    status_ = CalibrationStatus::SwitchPlayMode;
   else
     status_ = CalibrationStatus::None;
 
   // self control
   if (key == 32) // space
-    delay_ = delay_ == 0 ? 10 : 0;
+//    delay_ = delay_ == 0 ? 10 : 0;
+    delay_ = 10;
   else if (key == 'h' || key == 'H')
     PrintHelp();
 
@@ -51,7 +54,8 @@ void CalibViewer::PrintHelp() {
             << "v to switch mask visualisation\n"
             << "n to load next frame\n"
             << "w to write calibration results to file\n"
-            << "space to pause/continue\n"
+            << "p to switch play mode: auto grab next frame or not\n"
+//            << "space to pause/continue\n"
             << std::endl;
 }
 
