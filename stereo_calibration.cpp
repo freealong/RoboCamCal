@@ -5,60 +5,36 @@
 #include <ros/ros.h>
 
 #include "cxxopts.hpp"
-#include "CVUtils.hpp"
 #include "StereoCalibController.hpp"
 #include "CalibViewer.hpp"
 #include "CameraBridge.hpp"
 
 using namespace Robocamcal;
-using namespace Robocamcal::Utils;
 
-std::unique_ptr<CameraBridge> g_lbridge, g_rbridge;
-std::string g_lcamera_id, g_rcamera_id;
-cv::VideoCapture g_lcap, g_rcap;
-
-bool grab_lframe(cv::Mat &lframe) {
-  if (g_lbridge) {
-    return g_lbridge->Update(g_lcamera_id) &&
-        g_lbridge->FetchFrame(g_lcamera_id, ImageType::RGB, lframe);
-  } else if (g_lcap.isOpened()) {
-    if (g_lcap.grab()) {
-      g_lcap.retrieve(lframe);
-      return true;
-    } else {
-      return false;
-    }
+void draw_lines(cv::Mat &frame, bool vertical, int step = 20) {
+  if (vertical) {
+    for (int x = step; x < frame.cols; x += step)
+      cv::line(frame, {0, x}, {frame.rows, x}, {0, 255, 0});
   }
-  return false;
-}
-
-bool grab_rframe(cv::Mat &rframe) {
-  if (g_rbridge) {
-    return g_rbridge->Update(g_rcamera_id) &&
-        g_rbridge->FetchFrame(g_rcamera_id, ImageType::RGB, rframe);
-  } else if (g_rcap.isOpened()) {
-    if (g_rcap.grab()) {
-      g_rcap.retrieve(rframe);
-      return true;
-    } else {
-      return false;
-    }
+  else {
+    for (int y = step; y < frame.rows; y += step)
+      cv::line(frame, {y, 0}, {y, frame.cols}, {0, 255, 0});
   }
-  return false;
 }
 
 int main(int argc, char **argv) try {
+  ros::init(argc, argv, "stereo_calibration");
   // parser command line args
   cxxopts::Options options("stereo_camera_calibration", "stereo camera calibration.");
   options.add_options()
       ("li,left_input", "left input source, eg: camera.mp4,intrinsic_file.yml"
                         " image%03d.jpg,intrinsic_file.yml"
-                        " ros_camera_service_name,camera_id,intrinsic_file.yml",
+                        " ros_camera_service_name:camera_id,intrinsic_file.yml",
        cxxopts::value<std::vector<std::string>>());
   options.add_options()
       ("ri,right_input", "right input source, eg: camera.mp4,intrinsic_file.yml"
                          " image%03d.jpg,intrinsic_file.yml"
-                         " ros_camera_service_name,camera_id,intrinsic_file.yml",
+                         " ros_camera_service_name:camera_id,intrinsic_file.yml",
        cxxopts::value<std::vector<std::string>>());
   options.add_options()
       ("b,board", "board cfg file", cxxopts::value<std::string>());
@@ -69,26 +45,15 @@ int main(int argc, char **argv) try {
   std::string output_file = args["output"].as<std::string>();
   std::vector<std::string> left_input_list = args["left_input"].as<std::vector<std::string>>();
   std::vector<std::string> right_input_list = args["right_input"].as<std::vector<std::string>>();
-  if (left_input_list.size() > 2) {
-    ros::init(argc, argv, "left_camera_calibration");
-    g_lcamera_id = left_input_list[1];
-    g_lbridge = std::unique_ptr<CameraBridge>(new CameraBridge(left_input_list[0]));
-    std::cout << "left input source: " << g_lcamera_id << " in service "
-              << left_input_list[0] << std::endl;
-  } else if (left_input_list.size() > 1) {
-    g_lcap.open(left_input_list[0]);
+  std::unique_ptr<CameraBridge> lbridge, rbridge;
+  if (left_input_list.size() == 2) {
+    lbridge = std::unique_ptr<CameraBridge>(new CameraBridge(left_input_list[0]));
   } else {
     std::cerr << "invalid left input source" << std::endl;
     return -1;
   }
-  if (right_input_list.size() > 2) {
-    ros::init(argc, argv, "right_camera_calibration");
-    g_rcamera_id = right_input_list[1];
-    g_rbridge = std::unique_ptr<CameraBridge>(new CameraBridge(right_input_list[0]));
-    std::cout << "right input source: " << g_rcamera_id << " in service "
-              << right_input_list[0] << std::endl;
-  } else if (right_input_list.size() > 1) {
-    g_rcap.open(right_input_list[0]);
+  if (right_input_list.size() == 2) {
+    rbridge = std::unique_ptr<CameraBridge>(new CameraBridge(right_input_list[0]));
   } else {
     std::cerr << "invalid right input source" << std::endl;
     return -1;
@@ -119,8 +84,8 @@ int main(int argc, char **argv) try {
   cv::Mat right_frame, right_show_frame;
   bool rectify_view = false;
   bool auto_grab = false;
-  grab_lframe(left_frame);
-  grab_rframe(right_frame);
+  grab_frame(lbridge, left_frame);
+  grab_frame(rbridge, right_frame);
   while (status != CalibrationStatus::Finished) {
     // detect board
     left_detector->Detect(left_frame);
@@ -163,15 +128,15 @@ int main(int argc, char **argv) try {
       case CalibrationStatus::SwitchPlayMode:
         auto_grab = !auto_grab;
       case CalibrationStatus::NextFrame :
-        grab_lframe(left_frame);
-        grab_rframe(right_frame);
+        grab_frame(lbridge, left_frame);
+        grab_frame(rbridge, right_frame);
         break;
       case CalibrationStatus::WriteResult :results->write(output_file);
       default:break;
     }
     if (auto_grab) {
-      grab_lframe(left_frame);
-      grab_rframe(right_frame);
+      grab_frame(lbridge, left_frame);
+      grab_frame(rbridge, right_frame);
     }
   }
   return 0;

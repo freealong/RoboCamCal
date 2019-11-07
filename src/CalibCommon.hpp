@@ -5,6 +5,7 @@
 #ifndef ROBOCAMCAL_CALIBCOMMON_HPP
 #define ROBOCAMCAL_CALIBCOMMON_HPP
 
+#include <Eigen/Eigen>
 #include <opencv2/opencv.hpp>
 
 namespace Robocamcal {
@@ -27,7 +28,7 @@ struct CameraCalibResults {
 
   CameraCalibResults() : image_size(0, 0), valid(false) {}
   void print();
-  void write(std::string s);
+  bool write(std::string s);
   bool read(std::string s);
 };
 
@@ -52,7 +53,7 @@ struct StereoCalibResults {
 
   StereoCalibResults() : valid(false) {}
   void print();
-  void write(std::string s);
+  bool write(std::string s);
   bool read(std::string s);
 };
 
@@ -63,6 +64,26 @@ struct StereoCalibData {
   size_t size() {
     return left_data.size();
   }
+};
+
+// hand eye calibration data
+struct HandEyeCalibData {
+  std::vector<Eigen::Isometry3d> board_pose;
+  std::vector<Eigen::Isometry3d> robot_pose;
+  size_t size() {
+    return board_pose.size();
+  }
+};
+
+// hand eye calibration results
+struct HandEyeCalibResults {
+  Eigen::Isometry3d x;
+  bool valid = false;
+  CameraCalibResults intrs;
+  bool eye_in_hand = false;
+  void print();
+  bool write(std::string s);
+  bool read(std::string s);
 };
 
 }

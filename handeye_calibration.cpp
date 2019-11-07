@@ -5,19 +5,27 @@
 #include <ros/ros.h>
 
 #include "cxxopts.hpp"
-#include "CameraCalibController.hpp"
+#include "HandEyeCalibController.hpp"
 #include "CalibViewer.hpp"
 #include "CameraBridge.hpp"
+#include "RobotBridge.hpp"
 
 using namespace Robocamcal;
 
 int main(int argc, char **argv) try {
-  ros::init(argc, argv, "camera_calibration");
   // parser command line args
-  cxxopts::Options options("camera_calibration", "camera calibration.");
+  cxxopts::Options options("hand_eye_calibration", "hand eye calibration.");
   options.add_options()
-      ("i,input", "input source, eg: camera.mp4, image%03d.jpg, ros_camera_service_name:camera_id",
-          cxxopts::value<std::string>());
+      ("hi,hand_input", "hand input source, eg: robot_ros_service_name",
+       cxxopts::value<std::string>());
+  options.add_options()
+      ("ei,eye_input", "eye input source, eg: camera.mp4,intrinsic_file.yml"
+                       " image%03d.jpg,intrinsic_file.yml"
+                       " ros_camera_service_name:camera_id,intrinsic_file.yml",
+       cxxopts::value<std::vector<std::string>>());
+  options.add_options()
+      ("eih,eye_in_hand", "eye in hand",
+       cxxopts::value<bool>());
   options.add_options()
       ("b,board", "board cfg file", cxxopts::value<std::string>());
   options.add_options()
@@ -25,40 +33,47 @@ int main(int argc, char **argv) try {
   auto args = options.parse(argc, argv);
   std::string board_cfg = args["board"].as<std::string>();
   std::string output_file = args["output"].as<std::string>();
-  std::string input_source = args["input"].as<std::string>();
-  std::unique_ptr<CameraBridge> camera_bridge(new CameraBridge(input_source));
-
+  std::string hand_input = args["hand_input"].as<std::string>();
+  std::vector<std::string> eye_input_list = args["eye_input"].as<std::vector<std::string>>();
+  std::unique_ptr<CameraBridge> camera_bridge(new CameraBridge(eye_input_list[0]));
+  std::string camera_cfg = eye_input_list[eye_input_list.size()-1];
+  std::shared_ptr<RobotBridge> robot_bridge(new RobotBridge(hand_input));
   // init BoardDetector
   std::shared_ptr<BoardDetector> detector(new BoardDetector(board_cfg));
   // init CalibController
   CalibrationStatus status = CalibrationStatus::None;
-  std::shared_ptr<CameraCalibData> data(new CameraCalibData);
-  std::shared_ptr<CameraCalibResults> results(new CameraCalibResults);
-  std::shared_ptr<CalibController> controller(new CameraCalibController(data, results, detector));
+  std::shared_ptr<HandEyeCalibData> data(new HandEyeCalibData);
+  std::shared_ptr<HandEyeCalibResults> results(new HandEyeCalibResults);
+  std::shared_ptr<CalibController> controller(new HandEyeCalibController(
+      data, results, detector, robot_bridge));
   // init CalibViewer
   CalibViewer viewer;
   CalibViewer::PrintHelp();
+  // set camera params
+  results->intrs.read(camera_cfg);
+  results->eye_in_hand = args["eye_in_hand"].as<bool>();
   // begin to loop
   cv::Mat frame, show_frame;
-  bool undistort_view = false;
+  cv::Vec3d rvec, tvec;
   bool auto_grab = false;
   grab_frame(camera_bridge, frame);
   while (status != CalibrationStatus::Finished) {
     // detect board
-    detector->Detect(frame);
     show_frame = frame.clone();
-    detector->DrawImagePoints(show_frame);
+    if (detector->Detect(frame)) {
+      detector->DrawImagePoints(show_frame);
+    }
+    if (detector->CalculateBoardPose(results->intrs.camera_matrix, results->intrs.dist_coeffs,
+        rvec, tvec)) {
+      detector->DrawBoardPose(show_frame, results->intrs.camera_matrix, results->intrs.dist_coeffs,
+          rvec, tvec, 0.1);
+    }
     // show image
-    if (undistort_view && results->valid)
-      cv::remap(show_frame, show_frame, results->map1, results->map2, cv::INTER_LINEAR);
     viewer.AddImage("Image", show_frame);
     status = viewer.Update();
     // process keyboard event
     switch (status) {
       case CalibrationStatus::Calibration :
-        // set image size before calibration
-        results->image_size.height = frame.rows;
-        results->image_size.width = frame.cols;
         controller->Calibrate();
         results->print();
         break;
@@ -69,7 +84,6 @@ int main(int argc, char **argv) try {
         controller->DropData();
         break;
       case CalibrationStatus::SwitchUndistort :
-        undistort_view = !undistort_view;
         break;
       case CalibrationStatus::SwitchVisualisation :
         // @TODO:
