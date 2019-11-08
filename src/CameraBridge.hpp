@@ -27,7 +27,7 @@ class CameraBridge {
     if (from_ros_service_) {
       auto pos = source.find(':');
       auto service_name = source.substr(0, pos);
-      req_.camera_id = source.substr(pos, source.length());
+      req_.camera_id = source.substr(pos+1, source.length());
       std::cout << "input source: camera " << req_.camera_id << " from ROS "
                 << service_name << std::endl;
       rs_client_ = nh_.serviceClient<robocamcal::CameraData>(service_name);
