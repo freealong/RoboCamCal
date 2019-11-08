@@ -112,7 +112,8 @@ void HandEyeCalibResults::print() {
     return;
   }
   std::cout << "HandEye Calibration Result:" << std::endl;
-  std::cout << x.matrix() << std::endl;
+  std::cout << x.matrix().format(Eigen::IOFormat(0, 0, ",", ",\n", "[", "]", "[", "]"))
+            << std::endl;
   std::cout << std::endl;
 }
 

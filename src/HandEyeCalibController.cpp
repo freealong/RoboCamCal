@@ -32,7 +32,9 @@ void HandEyeCalibController::FeedData() {
     return;
   }
   data_->robot_pose.emplace_back(robot_pose);
-  data_->board_pose.emplace_back(Utils::Convert2Eigen(rvec, tvec));
+  Eigen::Isometry3d board_pose;
+  cv::cv2eigen(build_transfromation(rvec, tvec), board_pose.matrix());
+  data_->board_pose.emplace_back(board_pose);
   std::cout << "Feed data successfully, current data size: " << data_->size() << std::endl;
 }
 
@@ -55,14 +57,18 @@ bool HandEyeCalibController::Calibrate() {
   }
   std::vector<vpHomogeneousMatrix> A, B;
   for (const auto &x : data_->board_pose) {
-    A.emplace_back(Utils::Convert2Visp(x));
+    vpHomogeneousMatrix a;
+    eigen2vp(x.matrix(), a);
+    A.emplace_back(a);
   }
   for (const auto &x : data_->robot_pose) {
-    B.emplace_back(Utils::Convert2Visp(results_->eye_in_hand ? x : x.inverse()));
+    vpHomogeneousMatrix b;
+    eigen2vp(x.matrix(), b);
+    B.emplace_back(results_->eye_in_hand ? b : b.inverse());
   }
   vpHomogeneousMatrix X;
   vpCalibration::calibrationTsai(A, B, X);
-  results_->x = Utils::Convert2Eigen(X);
+  vp2eigen(X, results_->x.matrix());
   return (results_->valid = true);
 }
 

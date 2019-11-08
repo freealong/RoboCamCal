@@ -84,9 +84,10 @@ int main(int argc, char **argv) try {
         controller->DropData();
         break;
       case CalibrationStatus::SwitchUndistort :
+        // not support
         break;
       case CalibrationStatus::SwitchVisualisation :
-        // @TODO:
+        // not support
         break;
       case CalibrationStatus::SwitchPlayMode:
         auto_grab = !auto_grab;
