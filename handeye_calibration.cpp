@@ -13,18 +13,19 @@
 using namespace Robocamcal;
 
 int main(int argc, char **argv) try {
+  ros::init(argc, argv, "hand_eye_calibration");
   // parser command line args
   cxxopts::Options options("hand_eye_calibration", "hand eye calibration.");
   options.add_options()
-      ("hi,hand_input", "hand input source, eg: robot_ros_service_name",
+      ("h,hand_input", "hand input source, eg: robot_ros_service_name",
        cxxopts::value<std::string>());
   options.add_options()
-      ("ei,eye_input", "eye input source, eg: camera.mp4,intrinsic_file.yml"
+      ("e,eye_input", "eye input source, eg: camera.mp4,intrinsic_file.yml"
                        " image%03d.jpg,intrinsic_file.yml"
                        " ros_camera_service_name:camera_id,intrinsic_file.yml",
        cxxopts::value<std::vector<std::string>>());
   options.add_options()
-      ("eih,eye_in_hand", "eye in hand",
+      ("E,eye_in_hand", "eye in hand",
        cxxopts::value<bool>());
   options.add_options()
       ("b,board", "board cfg file", cxxopts::value<std::string>());
