@@ -1,10 +1,3 @@
-/*
- * Copyright (c) XYZ Robotics Inc. - All Rights Reserved
- * Unauthorized copying of this file, via any medium is strictly prohibited
- * Proprietary and confidential
- * Author: yongqi <Frank.lee@xyzrobotics.ai>, 2019/10/24
- */
-
 #include <ros/ros.h>
 #include <opencv2/opencv.hpp>
 #include "CameraBridge.hpp"

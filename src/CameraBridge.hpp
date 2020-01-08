@@ -1,9 +1,3 @@
-/*
- * Copyright (c) XYZ Robotics Inc. - All Rights Reserved
- * Unauthorized copying of this file, via any medium is strictly prohibited
- * Proprietary and confidential
- * Author: yongqi <Frank.lee@xyzrobotics.ai>, 2019/10/23
- */
 #ifndef ROBOCAMCAL_SRC__HPP_
 #define ROBOCAMCAL_SRC__HPP_
 
