@@ -17,6 +17,8 @@ if(CMAKE_SOURCE_DIR STREQUAL PROJECT_SOURCE_DIR)
     endif()
     find_package(OpenCV 3.0.0 REQUIRED)
     include_directories(OpenCV_INCLUDE_DIRS)
+    find_package(Eigen3 REQUIRED)
+    include_directories(${EIGEN3_INCLUDE_DIRS})
 endif()
 
 find_package(catkin REQUIRED COMPONENTS
@@ -39,6 +41,7 @@ include_directories(${catkin_INCLUDE_DIRS})
 add_service_files(
         FILES
         CameraData.srv
+        RobotPose.srv
 )
 
 ## Generate actions in the 'action' folder
@@ -71,27 +74,18 @@ file(GLOB_RECURSE robocamcal_HEADERS ${src_ROOT}/*.hpp ${src_ROOT}/*.h)
 file(GLOB_RECURSE robocamcal_SOURCES ${src_ROOT}/*.cpp ${src_ROOT}/*.cc)
 
 add_library(robocamcal ${robocamcal_HEADERS} ${robocamcal_SOURCES})
-target_link_libraries(robocamcal ${OpenCV_LIBRARIES} ${catkin_LIBRARIES})
+target_link_libraries(robocamcal ${OpenCV_LIBRARIES} ${catkin_LIBRARIES} ${VISP_LIBRARIES})
 
 include_directories(${src_ROOT})
-
-add_executable(hand_eye hand_eye.cpp)
-target_link_libraries(hand_eye gflags robocamcal ${VISP_LIBRARIES} ${OpenCV_LIBRARIES})
-
-add_executable(create_marker create_marker.cpp)
-target_link_libraries(create_marker ${OpenCV_LIBRARIES})
-
-add_executable(detect_markers detect_markers.cpp)
-target_link_libraries(detect_markers ${OpenCV_LIBRARIES})
-
-add_executable(temp_test temp_test.cpp)
-target_link_libraries(temp_test robocamcal ${VISP_LIBRARIES})
 
 add_executable(camera_calibration camera_calibration.cpp)
 target_link_libraries(camera_calibration robocamcal ${OpenCV_LIBRARIES})
 
 add_executable(stereo_calibration stereo_calibration.cpp)
 target_link_libraries(stereo_calibration robocamcal ${OpenCV_LIBRARIES})
+
+add_executable(handeye_calibration handeye_calibration.cpp)
+target_link_libraries(handeye_calibration robocamcal ${OpenCV_LIBRARIES})
 
 add_executable(camera_bridge_test test/camera_bridge_test.cc)
 target_link_libraries(camera_bridge_test robocamcal)

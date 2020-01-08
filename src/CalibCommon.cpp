@@ -21,10 +21,10 @@ void CameraCalibResults::print() {
   std::cout << std::endl;
 }
 
-void CameraCalibResults::write(std::string s) {
+bool CameraCalibResults::write(std::string s) {
   if (!valid) {
     std::cerr << "Results save failed. Please press r to run calibration first." << std::endl;
-    return;
+    return false;
   }
   cv::FileStorage fs(s, cv::FileStorage::WRITE);
   fs << "width" << image_size.width;
@@ -33,6 +33,7 @@ void CameraCalibResults::write(std::string s) {
   fs << "D" << dist_coeffs;
   fs << "rms" << rsm_error;
   std::cout << "write calibration results to " << s << " successfully" << std::endl;
+  return true;
 }
 
 bool CameraCalibResults::read(std::string s) {
@@ -69,10 +70,10 @@ void StereoCalibResults::print() {
   std::cout << std::endl;
 }
 
-void StereoCalibResults::write(std::string s) {
+bool StereoCalibResults::write(std::string s) {
   if (!valid) {
     std::cerr << "Results save failed. Please press r to run calibration first." << std::endl;
-    return;
+    return false;
   }
   cv::FileStorage fs(s, cv::FileStorage::WRITE);
   fs << "R" << R << "T" << T;
@@ -82,6 +83,7 @@ void StereoCalibResults::write(std::string s) {
   fs << "Q" << Q;
   fs << "rms" << rsm_error;
   std::cout << "write calibration results to " << s << " successfully" << std::endl;
+  return true;
 }
 
 bool StereoCalibResults::read(std::string s) {
@@ -102,6 +104,27 @@ bool StereoCalibResults::read(std::string s) {
   fs["rms"] >> rsm_error;
   std::cout << "read stereo params from " << s << " successfully" << std::endl;
   return (valid = true);
+}
+
+void HandEyeCalibResults::print() {
+  if (!valid) {
+    std::cerr << "Results print failed. Please press r to run calibration first." << std::endl;
+    return;
+  }
+  std::cout << "HandEye Calibration Result:" << std::endl;
+  std::cout << x.matrix().format(Eigen::IOFormat(0, 0, ",", ",\n", "[", "]", "[", "]"))
+            << std::endl;
+  std::cout << std::endl;
+}
+
+bool HandEyeCalibResults::read(std::string s) {
+  std::cerr << "not implement" << std::endl;
+  return false;
+}
+
+bool HandEyeCalibResults::write(std::string s) {
+  std::cerr << "not implement" << std::endl;
+  return false;
 }
 
 }
